@@ -13,7 +13,7 @@ function render_template($path, $array) {
 
     if (file_exists($path)){
         ob_start();
-        include_once($path);
+        include($path);
         $content=ob_get_clean();
     } else {
         $content = "";
@@ -25,5 +25,13 @@ function render_template($path, $array) {
 function esc($str) {
     return htmlspecialchars($str);
 };
+
+function time_to_midnight(){
+    $dif_ts = strtotime('00:00:00') - time();
+    $dif_all_min = floor($dif_ts / 60) + 24 * 60;
+    $dif = floor($dif_all_min / 60). ':' .floor($dif_all_min % 60);
+
+    return $dif;
+    };
 
 ?>
