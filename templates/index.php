@@ -45,6 +45,7 @@
                                 <!--Цена--></span>
                         </div>
                         <div class="lot__timer timer">
+                            <?=time_to_midnight();?>
                         </div>
                     </div>
                 </div>
