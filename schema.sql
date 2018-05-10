@@ -5,36 +5,36 @@ USE yeticave;
 
 CREATE TABLE category (
 id INT AUTO_INCREMENT PRIMARY KEY,
-name VARCHAR(64)
+name VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE lot (
 id INT AUTO_INCREMENT PRIMARY KEY,
-date_start DATETIME,
-name VARCHAR(64),
+date_start DATETIME NOT NULL,
+name VARCHAR(64) NOT NULL,
 discription TEXT,
 image VARCHAR(255),
-price_start INT UNSIGNED,
+price_start INT UNSIGNED NOT NULL,
 date_end DATETIME,
 step_bet INT UNSIGNED,
-user_id INT(10),
-category_id INT
+user_id INT(10) NOT NULL,
+category_id INT NOT NULL
 );
 
 CREATE TABLE bet (
 id INT AUTO_INCREMENT PRIMARY KEY,
-date_start DATETIME,
-price INT UNSIGNED,
-user_id INT,
-lot_id INT
+date_start DATETIME NOT NULL,
+price INT UNSIGNED NOT NULL,
+user_id INT NOT NULL,
+lot_id INT NOT NULL
 );
 
 CREATE TABLE user (
 id INT AUTO_INCREMENT PRIMARY KEY,
-date_register DATETIME,
-email VARCHAR(128),
-name VARCHAR(128),
-password VARCHAR(128),
+date_register DATETIME NOT NULL,
+email VARCHAR(128) NOT NULL,
+name VARCHAR(128) NOT NULL,
+password VARCHAR(128) NOT NULL,
 avatar VARCHAR(255),
 contact TEXT
 );
