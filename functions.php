@@ -34,4 +34,29 @@ function time_to_midnight(){
     return $dif;
     };
 
+ function getCategoryList($link) {
+     $sql =  'SELECT * FROM categories';
+     $result = mysqli_query($link, $sql);
+     if ($result) {
+         $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+     }
+     else {
+         $error = mysqli_error($link);
+         print('Ошибка выполнения запроса: '.$error);
+     }
+     return $array;
+ }
+
+function getLotsSortedByNew($link) {
+    $sql =  'SELECT date_start, name, discription, image, price_start, category_id FROM lots WHERE date_end IS NULL ORDER BY date_start DESC';
+    $result = mysqli_query($link, $sql);
+    if ($result) {
+        $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+    else {
+        $error = mysqli_error($link);
+        print('Ошибка выполнения запроса: '.$error);
+    }
+    return $array;
+}
 ?>
