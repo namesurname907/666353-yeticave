@@ -28,20 +28,20 @@
     </div>
     <!--Цикл с лотами-->
     <ul class="nav__list container">
-        <?php foreach ($ads as $key => $val):  ?>
+        <?php foreach ($lots as $lot):  ?>
             <li class="nav__item">
                 <div class="lot__image">
-                    <img src="<?=$val['image']; ?>" width="350" height="260" alt="Сноуборд">
+                    <img src="<?=$lot['image']; ?>" width="350" height="260" alt="Сноуборд">
                 </div>
                 <div class="lot__info">
-                    <span class="lot__category"><?=$val['category'];?></span>
-                    <h3 class="lot__title"><a class="text-link" href="lot.html"><?=esc($val['name']);?></a></h3>
+                    <span class="lot__category"><?=$categories[$lot['category_id']]['name'];?></span>
+                    <h3 class="lot__title"><a class="text-link" href="<?='lot.php?id='.$lot['id']; ?>"><?=esc($lot['name']);?></a></h3>
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost">
                                 <!--Цена-->
-                                <?= price_format($val['price']); ?>
+                                <?= price_format($lot['price_start']); ?>
                                 <!--Цена--></span>
                         </div>
                         <div class="lot__timer timer">
