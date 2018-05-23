@@ -1,61 +1,65 @@
 USE yeticave;
 
-INSERT INTO category(name) VALUES ('Доски и лыжи'), ('Крепления'), ('Ботинки'), ('Одежда'), ('Инструменты'), ('Разное');
+INSERT INTO categories(name) VALUES ('Доски и лыжи'), ('Крепления'), ('Ботинки'), ('Одежда'), ('Инструменты'), ('Разное'), ('Аксессуары');
 
-INSERT INTO user(name, email, password, avatar, date_register) VALUES ('Иван', 'ivan80@e.mail', 'pas1', '', '2017-04-24 14:20:10'), 
+INSERT INTO users(name, email, password, avatar, date_register) VALUES ('Иван', 'ivan80@e.mail', 'pas1', '', '2017-04-24 14:20:10'), 
 ('Константин', 'kostik777@e.mail', 'passWORD', 'img/user.jpg', '2017-04-04 12:07:05'),
 ('Евгений', 'jeka@e.mail', '123456789', '', '2016-03-24 14:20:10'),
-('Семён', 'semki666@e.mail', 'qwerty123', '', '2017-09-24 11:11:00');
+('Семён', 'semki666@e.mail', 'qwerty123', '', '2017-09-24 11:11:00'),
+('Игнат', 'signat.v@gmail.com', 'qwerty123', '', '2017-10-05 11:01:00'),
+('Леночка', 'kitty_93@li.ru', 'qwerty123', '', '2017-11-05 05:21:40'),
+('Руслан', 'warrior07@mail.ru', 'qwerty123', '', '2017-11-15 17:01:30');
 
-INSERT INTO lot(name, category_id, image, price_start, date_start, user_id, step_bet, date_end) VALUES ('2014 Rossignol District Snowboard', '1', 'img/lot-1.jpg', '10999', '2018-04-02 00:05:10', '3', '200', '2018-04-08 18:15:10'),
-('DC Ply Mens 2016/2017 Snowboard', '1', 'img/lot-2.jpg', '159999', '2018-04-16 14:32:10', '1', '2000', '2018-04-25 14:25:10'),
-('Крепления Union Contact Pro 2015 года размер L/XL', '2', 'img/lot-3.jpg', '8000', '2018-04-18 00:05:10', '1', '500','2018-04-28 10:45:18'),
-('Ботинки для сноуборда DC Mutiny Charocal', '3', 'img/lot-4.jpg', '10999', '2018-04-28 00:05:10', '2', '200', NULL),
-('Куртка для сноуборда DC Mutiny Charocal', '4', 'img/lot-5.jpg', '7500', '2018-04-28 12:05:47', '4', '150', NULL),
-('Маска Oakley Canopy', '6', 'img/lot-6.jpg', '5400', '2017-05-01 00:05:10', '2', '500', NULL);
+INSERT INTO lots(name, category_id, image, price_start, date_start, user_id, step_bet, date_end, description) VALUES ('2014 Rossignol District Snowboard', '1', 'img/lot-1.jpg', '10999', '2018-04-02 00:05:10', '3', '200', '2018-04-08 18:15:10', 'Яркая и стильная доска не оставит незамеченной свою хозяйку. Эта доска покажет вам мир снега и не оставит равнодушной к этому замечательному виду спорта.'),
+('DC Ply Mens 2016/2017 Snowboard', '1', 'img/lot-2.jpg', '159999', '2018-04-16 14:32:10', '1', '2000', '2018-04-25 14:25:10', 'Топовая модель для агрессивнового парка и фристайла. У доски классическая форма. Фирменная база в третьем поколении обладает улучшенной динамикой за счет технологии SIDEKICK. Эта модель сочетает в себе лучшие свойства: от стритовой геометрии и мощнейшего щелчка парковых досок до управляемости снарядов из жанра All Mountain.'),
+('Крепления Union Contact Pro 2015 года размер L/XL', '2', 'img/lot-3.jpg', '8000', '2018-04-18 00:05:10', '1', '500','2018-04-28 10:45:18', ''),
+('Ботинки для сноуборда DC Mutiny Charocal', '3', 'img/lot-4.jpg', '10999', '2018-04-28 00:05:10', '2', '200', '2018-06-28 10:45:18', ''),
+('Куртка для сноуборда DC Mutiny Charocal', '4', 'img/lot-5.jpg', '7500', '2018-04-28 12:05:47', '4', '150', '2018-07-01 10:45:18', ''),
+('Маска Oakley Canopy', '6', 'img/lot-6.jpg', '5400', '2017-05-01 00:05:10', '2', '500', '2018-07-29 17:45:18', 'Маска среднего размера с большой линзой, которая не будет выглядеть слишком громоздко, но при этом обеспечит отличный обзор. Гибкая рамка оправы O Matter™ адаптируется к форме лица, даже при очень низкой температуре, а тройная прослойка из микрофлиса отводит влагу, благодаря чему маску можно с комфортом носить целый день.'),
+('Fischer TWIN SKIN POWER EF NIS N44416', '1', 'img/lot-7.jpg', '6800', '2017-05-01 00:05:10', '2', '300', '2018-08-01 10:45:18', 'Классическая модель для активного отдыха. В модели использован легкий сердечник Air Channel Basalite. Камус Twin Skin обеспечивает уверенное держание на подьеме.');
 
-INSERT INTO bet(user_id, price, lot_id, date_start) VALUES ('1', '5900', '6', '2018-05-01 23:30:45'),
+INSERT INTO bets(user_id, price, lot_id, date_start) VALUES ('1', '5900', '6', '2018-05-01 23:30:45'),
 ('2', '11399', '4', '2018-05-07 17:30:02'),
 ('3', '7800', '5', '2018-05-04 07:30:00'),
-('1', '6400', '6', '2018-05-08 11:50:49'),
-('1', '6900', '6', '2018-05-08 17:30:59');
+('5', '6400', '6', '2018-05-08 11:50:49'),
+('2', '6900', '6', '2018-05-08 17:30:59');
 
 
 /*Выводим все лоты*/
-SELECT * FROM lot;
+SELECT * FROM lots;
 /*Выводим все ставки*/
-SELECT * FROM bet;
+SELECT * FROM bets;
 /*Выводим всех пользвателей*/
-SELECT * FROM user;
+SELECT * FROM users;
 /*Выводим все категории*/
-SELECT * FROM category;
+SELECT * FROM categories;
 
 /*Получим самые новые, открытые лоты. Каждый лот в итоговой таблице включает название, стартовую цену, ссылку на изображение, цену (текущая максимальная ставка по лоту), количество ставок, название категории*/
-SELECT l.id, l.name, c.name, image, l.date_start, price_start, COUNT(b.id) as bet_total, MAX(b.price) as cur_max_price FROM bet b
-   LEFT JOIN lot l
+SELECT l.id, l.name, c.name, image, l.date_start, price_start, COUNT(b.id) as bet_total, MAX(b.price) as cur_max_price FROM bets b
+   LEFT JOIN lots l
 	ON b.lot_id = l.id      
-   LEFT JOIN category c
+   LEFT JOIN categories c
    ON l.category_id = c.id
 	WHERE date_end IS NULL GROUP BY l.id ORDER BY l.date_start DESC;
 
 
 /*Показываем лот по его id. Получием также название категории, к которой принадлежит лот*/
-SELECT l.name, c.name FROM lot l
-	LEFT JOIN category c
+SELECT l.name, c.name FROM lots l
+	LEFT JOIN categories c
 	ON l.category_id = c.id 
 	WHERE c.id = '3';
 
 /*Обновляем название лота по его идентификатору*/
-UPDATE lot SET name = '2015 Rossignol District Snowboard'
+UPDATE lots SET name = '2015 Rossignol District Snowboard'
 WHERE id = '1';
 
 /*Получаем список самых свежих ставок для лота по его индексу
 По индексу 6*/
-SELECT * FROM bet
+SELECT * FROM bets
 WHERE lot_id = '6' ORDER BY date_start DESC;
 /*По индексу 4*/
-SELECT * FROM bet
+SELECT * FROM bets
 WHERE lot_id = '4' ORDER BY date_start DESC;
 /*По индексу 5*/
-SELECT * FROM bet
+SELECT * FROM bets
 WHERE lot_id = '5' ORDER BY date_start DESC;

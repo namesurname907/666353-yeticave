@@ -1,5 +1,6 @@
 <?php
 require_once 'functions.php';
+require_once 'sql_functions.php';
 
 $is_auth = (bool) rand(0, 1);
 $user_name = 'Константин';
