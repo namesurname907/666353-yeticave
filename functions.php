@@ -1,4 +1,5 @@
 <?php
+/*Форматирование цены*/
 function price_format($price) {
     $price = ceil($price);
 
@@ -7,7 +8,7 @@ function price_format($price) {
     }
     return $price." ₽";
 };
-
+/*Вставка шаблона*/
 function render_template($path, $array) {
     extract($array);
 
@@ -21,11 +22,11 @@ function render_template($path, $array) {
 
     return $content;
 };
-
+/*Защита от XSS*/
 function esc($str) {
     return htmlspecialchars($str);
 };
-
+/*Таймер расчета остатка времени до полуночи*/
 function time_to_midnight(){
     $dif_ts = strtotime('00:00:00') - time();
     $dif_all_min = floor($dif_ts / 60) + 24 * 60;
@@ -33,71 +34,78 @@ function time_to_midnight(){
 
     return $dif;
 };
-
-function getCategoryList($link) {
-    $sql =  'SELECT id, name FROM categories ORDER BY id ASC;';
-    $result = mysqli_query($link, $sql);
-    if ($result) {
-        $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+/*Валидация полей на пустоту*/
+function validateEmptyPost($required = ['name'], $errors) {
+    foreach ($required as $key) {
+        if (empty($_POST[$key])) {
+             $errors[$key] = 'Это поле надо заполнить';
+        }
+    }
+    return $errors;
+};
+/*Валидация полей на целое положительное число*/
+function validateIntPost($required = ['price'], $errors) {
+    foreach ($required as $key) {
+        if (!empty($_POST[$key])) {
+            if (!filter_var($_POST[$key], FILTER_VALIDATE_INT) OR $_POST[$key]<0) {
+                 $errors[$key] = 'Неверный формат';
+            }
+        }
+    }
+    return $errors;
+};
+/*Валидация даты*/
+function validateDatePost($required =['date'], $errors) {
+    if (!empty($_POST[$required])) {
+        $dif = strtotime($_POST[$required]) - time() - 86400;
+        if ($dif<0) {
+            $errors['lot-date'] = 'Дата истечения лота неккоректна';
+        };
+        }
+    return $errors;
+};
+/*Проверяет наличие файла и его формат, аргументы: 1) имя формы, 2) формат файла, 3) массив, куда добавляем ошибки, 4) если 1, то отсутствие файла также записывается в ошибки*/
+function validateFile($required, $format = ['image/png'], $errors, $empty_er) {
+    if (!empty($_FILES[$required]['name'])) {
+        $file_type = mime_content_type($_FILES[$required]['tmp_name']);
+        $errors['file'] = 'Загрузите файл в нужном формате';
+        foreach ($format as $form) {
+            if ($file_type === $form) {
+                $errors['file'] = NULL;
+            };
+        };
     }
     else {
-        $errors[] = mysqli_error($link);
-    }
-    return $array;
+        if ($empty_er === 1) {
+        $errors['file'] = 'Вы не загрузили файл';
+        };
+    };
+    return $errors;
 };
+/*Получить имя файла, сгенерировав уникальное имя*/
+function getFilePath($required, $place) {
+    if (isset($_FILES[$required]['name'])) {
+                $tmp_name = $_FILES[$required]['tmp_name'];
+                $path = uniqid().'.jpg';
+                move_uploaded_file($tmp_name, $place . $path);
+                $file_path = $place.$path;
+            }
+    return $file_path;
 
-function getLotsSortedByNew($link) {
-    $sql = 'SELECT id, name, date_start,  discription, image, price_start, category_id FROM lots WHERE date_end IS NULL ORDER BY date_start DESC';
-    $result = mysqli_query($link, $sql);
-    if ($result) {
-        $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+};
+/*Если 1 аргумент, то в случае успешной проверки его существования, возвращает его, если имеется второй аргумент, то возвращает второй аргумент. Если элемент не существует возвращает пустоту */
+function insertIfIsset($var, $str = 0) {
+    if (!empty($var)) {
+        if ($str === 0) {
+            $v = $var;
+        }
+        else {
+            $v=$str;
+        }
     }
     else {
-        $errors[] = mysqli_error($link);
-    }
-    return $array;
+            $v='';
+        }
+    return $v;
 };
-
-function getBetsById($link, $id) {
-    $sql = "SELECT b.date_start, b.price, u.name as user_name FROM bets b
-                        	LEFT JOIN users u
-                        	ON b.user_id = u.id
-                        WHERE lot_id='$id' ORDER BY date_start DESC";
-    $result = mysqli_query($link, $sql);
-    if ($result) {
-        $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    }
-    return $array;
-};
-
-/*Получаем данные лота, где его id равен полученному из параметра запроса*/
-function getLotById($link, $id) {
-    $sql = "SELECT name, image, discription, price_start, step_bet, category_id FROM lots WHERE id = '$id'";
-    $result = mysqli_query($link, $sql);
-    if ($result) {
-        $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    }
-    return array_shift($array);
-};
-
-/*Рассчитываем плэйсхолдер для поля "Ваша ставка"*/
-function yourBet($link, $id, $lot) {
-    $sql = "SELECT l.price_start as price_start, l.step_bet as step_bet, COUNT(b.id) as bet_total, MAX(b.price) as cur_max_price FROM bets b
-               LEFT JOIN lots l
-            	ON b.lot_id = l.id
-            	WHERE date_end IS NULL AND l.id = '$id' GROUP BY l.id";
-       $result = mysqli_query($link, $sql);
-       if ($result) {
-           $array = array_shift(mysqli_fetch_all($result, MYSQLI_ASSOC));
-           if (empty($array['cur_max_price'])) {
-           $yourBet = $lot['price_start'] + $lot['step_bet'];
-           }
-           else {
-           $yourBet = $array['cur_max_price'] + $array['step_bet'];
-           };
-
-       }
-       return $yourBet;
-   };
-
 ?>
