@@ -1,10 +1,8 @@
 <?php
-require_once 'functions.php';
-require_once 'sql_functions.php';
+date_default_timezone_set("Europe/Moscow");
 
-$is_auth = (bool) rand(0, 1);
-$user_name = 'Константин';
-$user_avatar = 'img/user.jpg';
+require_once('functions.php');
+require_once('sql_functions.php');
 
 $link = mysqli_connect('localhost', 'root', '', 'yeticave');
 mysqli_set_charset($link, "utf8");

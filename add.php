@@ -6,54 +6,70 @@ if (!$link) {
     print('Ошибка подключения: '.mysqli_connect_error());
 }
 else {
+    /*Поисовим переменным пустоту*/
+    $user = NULL;
+    $errors = [];
+    $lot = [];
+    $file_path = '';
+
+    /*Закрываем доступ к странице, если пользователь неавторизован, а если авторизован получаем его данные*/
+    session_start();
+    if (!isset($_SESSION['user'])) {
+        http_response_code(404);
+        exit();
+    }
+    else {
+       $user = getUserInfo($link, $_SESSION['user']);
+    };
 
     /*Получаем список категорий и проверяем не произошла ли ошибка при запросе*/
     $categories = getCategoryList($link);
-    if (!empty($errors)) {
-        foreach ($errors as $error) {
-            Print('Ошибка подключения: '.$error);
-            }
-    };
 
     /*Проверяем отправлена ли форма*/
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         /*Переменные для сохранения значений полей*/
-        $name = $_POST['lot-name'];
-        $category = $_POST['category'];
-            $cat[$category] = 'selected';
-        $message = $_POST['message'];
-        $lot_rate = $_POST['lot-rate'];
-        $lot_step = $_POST['lot-step'];
-        $lot_date = $_POST['lot-date'];
+        $lot['name'] = $_POST['lot-name'];
+        $lot['category'] = $_POST['category'];
+        $lot['message'] = $_POST['message'];
+        $lot['rate'] = $_POST['lot-rate'];
+        $lot['step'] = $_POST['lot-step'];
+        $lot['date'] = $_POST['lot-date'];
 
         /*Проверяем все поля на заполненость*/
-        $errors=validateEmptyPost(['lot-name', 'category', 'message', 'lot-rate', 'lot-step', 'lot-date'], $errors);
+        $errors=validateEmpty($lot, $errors);
 
         /*Проверяем формат полей*/
-        $errors=validateIntPost(['lot-rate', 'lot-step'], $errors);
+        $errors=validateInt(['rate' => $lot['rate'], 'step' => $lot['step']], $errors);
 
         /*Проверяем дату окончания*/
-        $errors=validateDatePost('lot-date', $errors);
+        $errors=validateDate(['date' => $lot['date']], $errors);
 
         /*Проверяем существование и формат файла*/
-        $errors = validateFile('lot-img', ['image/jpeg', 'image/png'], $errors, 1);
+        if (!empty($_FILES['lot-img']['tmp_name'])) {
+            $errors = validateFile($_FILES['lot-img']['tmp_name'], ['image/jpeg', 'image/png'], $errors);
+        }
+        else {
+            $errors['file'] = 'Вы не загрузили файл';
+        }
 
         /*Проверяем собрали ли мы какие-нибудь ошибки*/
         if (empty($errors)) {
+            $path = uniqid().'.jpg';
+            $place = "img/";
+            $file_path = $place . $path;
+            move_uploaded_file($_FILES['lot-img']['tmp_name'], $file_path);
 
-            $file_path = getFilePath('lot-img', 'img/');
-
-            $answer = insertLot($link, [$name, $category, $file_path, $lot_rate, $lot_step, $lot_date, $message]);
-                if (empty($answer['error'])) {
-                    $lot_id = $answer['lot-id'];
-                    header("Location: lot.php?id=" . $lot_id);
-                }
-        }
+            $answer = insertLot($link, ['name' => $lot['name'], 'category' => $lot['category'], 'file_path' => $file_path, 'rate' => $lot['rate'], 'id' => $user['id'], 'step' => $lot['step'], 'date' => $lot['date'], 'message' => $lot['message']]);
+            if (empty($answer['error'])) {
+                $lot_id = $answer['lot-id'];
+                header("Location: lot.php?id=" . $lot_id);
+            };
+        };
     };
 
-    $content = render_template('templates/add.php', ['categories' => $categories, 'errors' => $errors, 'name' => $name, 'category' => $category, 'message' => $message, 'lot_rate' => $lot_rate, 'lot_step' => $lot_step, 'lot_date' => $lot_date, 'cat' => $cat, 'error_class' => 'form__item--invalid']);
-    $all_content = render_template('templates/layout.php', ['categories' => $categories, 'content' => $content, 'title' => $lot['name'], 'is_auth' => $is_auth, 'user_name' => $user_name, 'user_avatar' => $user_avatar]);
+    $content = render_template('templates/add.php', ['categories' => $categories, 'errors' => $errors, 'lot' => $lot, 'error_class' => 'form__item--invalid']);
+    $all_content = render_template('templates/layout.php', ['categories' => $categories, 'content' => $content, 'title' => $lot['name'], 'user_name' => $user['name'], 'user_avatar' => $user['avatar']]);
     print($all_content);
 };
 
