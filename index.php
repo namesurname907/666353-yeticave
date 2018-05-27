@@ -6,14 +6,24 @@ if (!$link) {
     print('Ошибка подключения: '.mysqli_connect_error());
 }
 else {
+
+
+    try{ $categories = getCategoryList($link);
+         $lots = getLotsSortedByNew($link);
+    } catch (Exception $e) {
+        http_response_code(500); exit();
+    }
+
     $lots = getLotsSortedByNew($link);
-    $categories = getCategoryList($link);
 
     $user = [];
 
     session_start();
     if (isset($_SESSION['user'])) {
-        $user = getUserInfo($link, $_SESSION['user']);
+        try{ $user = getUserInfo($link, $_SESSION['user']);
+         } catch (Exception $e) {
+                http_response_code(500); exit();
+         }
     };
 
     $content = render_template('templates/index.php', ['lots' => $lots, 'categories' => $categories]);

@@ -4,13 +4,12 @@
 function getCategoryList($link) {
     $sql =  'SELECT id, name FROM categories ORDER BY id ASC';
     $result = mysqli_query($link, $sql);
-    if ($result) {
-        $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    if (!$result) {
+        throw new Exception("DATABASE ERROR");
     }
     else {
-        throw new Exception('DATABASE ERROR');
+        return mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
-    return $array;
 };
 /*Получение списка новых лотов, отсортированного по новизне
 ---*/
@@ -18,12 +17,11 @@ function getLotsSortedByNew($link) {
     $sql = 'SELECT id, name, date_start,  description, image, price_start, category_id FROM lots WHERE date_end>NOW() ORDER BY date_start DESC';
     $result = mysqli_query($link, $sql);
     if ($result) {
-        $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        return mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
     else {
-        throw new Exception('DATABASE ERROR');
+        throw new Exception("DATABASE ERROR");
     }
-    return $array;
 };
 /*Получение всех ставок для лота по его id
 Приведение к типу*/
@@ -90,6 +88,9 @@ function validatePasswordByEmail($link, $password, $email, $errors) {
             if (!password_verify($password, $user['password'])) {
                 $errors['password'] = "Пароль введен неверно. Повторите попытку";
             }
+        }
+        else {
+            throw new Exception('DATABASE ERROR');
         };
     return $errors;
 };
@@ -111,16 +112,15 @@ function insertUser($link, $email, $name, $password, $file_path, $message) {
 /*Добавление лота в БД
 Подготовленные выражения*/
 function insertLot($link, $data = []) {
-   $sql = 'INSERT INTO lots (date_start, name, category_id, image, price_start, user_id, step_bet, date_end, description) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
-   $stmt = db_get_prepare_stmt($link, $sql, $data);
-   $res = mysqli_stmt_execute($stmt);
-   if ($res) {
-       $answer['lot-id'] = mysqli_insert_id($link);
-   }
-   else {
-       $answer['error'] = 'Не удалось добавить лот';
-   }
-   return $answer;
+    $sql = 'INSERT INTO lots (date_start, name, category_id, image, price_start, user_id, step_bet, date_end, description) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
+    $stmt = db_get_prepare_stmt($link, $sql, $data);
+    $res = mysqli_stmt_execute($stmt);
+    if ($res) {
+        return $lot_id = mysqli_insert_id($link);
+    }
+    else {
+        throw new Exception("DATABASE ERROR");
+    }
 };
 /*Валидация email на формат и существование в БД; $up = 1 - для регитрации, другое для входа
 Экранирование данных*/
@@ -133,15 +133,20 @@ function validateEmail($link, $required, $errors, $up = 1) {
         else {
             $sql = "SELECT id FROM users WHERE email = '$email'";
             $res = mysqli_query($link, $sql);
-            $num_rows = mysqli_num_rows($res);
-            if ($num_rows > 0) {
-                 if ($up === 1) {
-                     $errors[$required] = 'Пользователь с этим email уже зарегистрирован';
-                 }
+            if (mysqli_error($link)) {
+                throw new Exception("DATABASE ERROR");
             }
             else {
-                if ($up !== 1) {
-                    $errors[$required] = 'Пользователя с таким email не существует';
+                $num_rows = mysqli_num_rows($res);
+                if ($num_rows > 0) {
+                     if ($up === 1) {
+                         $errors[$required] = 'Пользователь с этим email уже зарегистрирован';
+                     }
+                }
+                else {
+                    if ($up !== 1) {
+                        $errors[$required] = 'Пользователя с таким email не существует';
+                    };
                 };
             };
         };
@@ -158,7 +163,7 @@ function getUserInfo($link, $email) {
         $array = mysqli_fetch_assoc($result);
     }
     else {
-    throw new Exception('DATABASE ERROR');
+        throw new Exception('DATABASE ERROR');
     }
     return $array;
 };
@@ -171,8 +176,8 @@ function insertBet($link, $price, $user_id, $lot_id) {
    $sql = "INSERT INTO bets (date_start, price, user_id, lot_id) VALUES (NOW(), '$price', '$user_id', '$lot_id')";
    $res = mysqli_query($link, $sql);
    if (!$res) {
-        $error['bet'] = 'Не удалось добавить ставку';
+        $error = 'Не удалось вставить лот';
    }
-   return $errors;
+   return $error;
 };
 ?>

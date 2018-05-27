@@ -24,15 +24,18 @@ else {
         $email = $_POST['email'];
         $password = $_POST['password'];
 
+
         /*Проверяем все поля на заполненость*/
         $errors=validateEmpty(['email' => $email, 'password' => $password], $errors);
 
         /*Проверяем формат email и существует ли он в базе*/
-        $errors = validateEmail($link, 'email', $errors, 0);
-
-        /*Если поле пароля не пустое, то проверяем его*/
-        if (!empty($password)) {
-            $errors = validatePasswordByEmail($link, $password, $email, $errors);
+        try{ $errors = validateEmail($link, 'email', $errors, 0);
+            /*Если поле пароля не пустое, то проверяем его*/
+            if (!empty($password)) {
+                $errors = validatePasswordByEmail($link, $password, $email, $errors);
+            }
+        } catch (Exception $e) {
+            http_response_code(500); exit();
         }
 
         /*Проверяем собрали ли мы какие-нибудь ошибки, если нет, то переадресовываем пользователя*/
