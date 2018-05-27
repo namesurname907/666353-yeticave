@@ -2,13 +2,13 @@
 /*Получение списка категорий
 ---*/
 function getCategoryList($link) {
-    $sql =  'SELECT id, name FROM categories ORDER BY id ASC;';
+    $sql =  'SELECT id, name FROM categories ORDER BY id ASC';
     $result = mysqli_query($link, $sql);
     if ($result) {
         $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
     else {
-        $errors[] = mysqli_error($link);
+        throw new Exception('DATABASE ERROR');
     }
     return $array;
 };
@@ -21,7 +21,7 @@ function getLotsSortedByNew($link) {
         $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
     else {
-        $errors[] = mysqli_error($link);
+        throw new Exception('DATABASE ERROR');
     }
     return $array;
 };
@@ -37,16 +37,22 @@ function getBetsById($link, $id) {
     if ($result) {
         $array = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
+    else {
+        throw new Exception('DATABASE ERROR');
+    }
     return $array;
 };
 /*Получаем данные лота по его id
 Приведение к типу*/
 function getLotById($link, $id) {
     $id = intval($id);
-    $sql = "SELECT name, image, description, price_start, step_bet, category_id FROM lots WHERE id='$id'";
+    $sql = "SELECT name, image, description, price_start, step_bet, category_id, date_end FROM lots WHERE id='$id'";
     $result = mysqli_query($link, $sql);
     if ($result) {
         $array = mysqli_fetch_assoc($result);
+    }
+    else {
+        throw new Exception('DATABASE ERROR');
     }
     return $array;
 };
@@ -57,18 +63,20 @@ function yourBet($link, $id, $lot) {
     $sql = "SELECT l.price_start as price_start, l.step_bet as step_bet, COUNT(b.id) as bet_total, MAX(b.price) as cur_max_price FROM bets b
                 LEFT JOIN lots l
                 ON b.lot_id = l.id
-            	WHERE date_end IS NULL AND l.id = '$id' GROUP BY l.id";
+            	WHERE date_end>NOW() AND l.id = '$id' GROUP BY l.id ORDER BY cur_max_price DESC";
     $result = mysqli_query($link, $sql);
     if ($result) {
-       $array = array_shift(mysqli_fetch_all($result, MYSQLI_ASSOC));
+       $array = mysqli_fetch_assoc($result);
        if (empty($array['cur_max_price'])) {
-       $yourBet = $lot['price_start'] + $lot['step_bet'];
+            $yourBet = $lot['price_start'] + $lot['step_bet'];
        }
        else {
-       $yourBet = $array['cur_max_price'] + $array['step_bet'];
-       };
-
-    }
+            $yourBet = $array['cur_max_price'] + $array['step_bet'];
+       }
+   }
+    else {
+        throw new Exception('DATABASE ERROR');
+    };
     return $yourBet;
 };
 /*Проверка пароля по email пользователя
@@ -88,10 +96,10 @@ function validatePasswordByEmail($link, $password, $email, $errors) {
 /*Добавление пользователя в БД
 Подготовленные выражения*/
 function insertUser($link, $email, $name, $password, $file_path, $message) {
-    $password = password_hash($form['password'], PASSWORD_DEFAULT);
+    $password = password_hash($password, PASSWORD_DEFAULT);
 
     $sql = 'INSERT INTO users (date_register, email, name, password, avatar, contact) VALUES (NOW(), ?, ?, ?, ?, ?)';
-    $stmt = db_get_prepare_stmt($link, $sql, [$email, $name, $password, $file_path, $message]);
+    $stmt = db_get_prepare_stmt($link, $sql, ['email' => $email, 'name' => $name, 'password' => $password, 'file_path' => $file_path, 'message' => $message]);
     $res = mysqli_stmt_execute($stmt);
 
     if (!$res) {
@@ -103,7 +111,7 @@ function insertUser($link, $email, $name, $password, $file_path, $message) {
 /*Добавление лота в БД
 Подготовленные выражения*/
 function insertLot($link, $data = []) {
-   $sql = 'INSERT INTO lots (date_start, name, category_id, image, price_start, user_id, step_bet, date_end, description) VALUES (NOW(), ?, ?, ?, ?, 1, ?, ?, ?)';
+   $sql = 'INSERT INTO lots (date_start, name, category_id, image, price_start, user_id, step_bet, date_end, description) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
    $stmt = db_get_prepare_stmt($link, $sql, $data);
    $res = mysqli_stmt_execute($stmt);
    if ($res) {
@@ -127,9 +135,9 @@ function validateEmail($link, $required, $errors, $up = 1) {
             $res = mysqli_query($link, $sql);
             $num_rows = mysqli_num_rows($res);
             if ($num_rows > 0) {
-                if ($up === 1) {
-                    $errors[$required] = 'Пользователь с этим email уже зарегистрирован';
-                }
+                 if ($up === 1) {
+                     $errors[$required] = 'Пользователь с этим email уже зарегистрирован';
+                 }
             }
             else {
                 if ($up !== 1) {
@@ -139,5 +147,32 @@ function validateEmail($link, $required, $errors, $up = 1) {
         };
     };
     return $errors;
+};
+/*Получаем данные пользователя по его email
+Приведение к типу*/
+function getUserInfo($link, $email) {
+    $email = mysqli_real_escape_string($link, $email);
+    $sql = "SELECT id, name, avatar, contact FROM users WHERE email='$email'";
+    $result = mysqli_query($link, $sql);
+    if ($result) {
+        $array = mysqli_fetch_assoc($result);
+    }
+    else {
+    throw new Exception('DATABASE ERROR');
+    }
+    return $array;
+};
+/*Добавление ставки в БД
+Приведение к типу*/
+function insertBet($link, $price, $user_id, $lot_id) {
+   $price = intval($price);
+   $user_id = intval($user_id);
+   $lot_id = intval($lot_id);
+   $sql = "INSERT INTO bets (date_start, price, user_id, lot_id) VALUES (NOW(), '$price', '$user_id', '$lot_id')";
+   $res = mysqli_query($link, $sql);
+   if (!$res) {
+        $error['bet'] = 'Не удалось добавить ставку';
+   }
+   return $errors;
 };
 ?>

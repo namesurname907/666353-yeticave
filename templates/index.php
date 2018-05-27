@@ -45,7 +45,7 @@
                                 <!--Цена--></span>
                         </div>
                         <div class="lot__timer timer">
-                            <?=time_to_midnight();?>
+                            <?=date('G:i:s', dateBeforeEnd($lot['date_end']));?>
                         </div>
                     </div>
                 </div>

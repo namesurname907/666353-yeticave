@@ -20,24 +20,27 @@
   <div class="lot-item__right">
     <div class="lot-item__state">
       <div class="lot-item__timer timer">
-        10:54:12
+        <?=date('G:i:s', dateBeforeEnd($lot['date_end']));?>
       </div>
       <div class="lot-item__cost-state">
         <div class="lot-item__rate">
-          <span class="lot-item__amount"><?=$lot['price_start']; ?></span>
-          <span class="lot-item__cost"><?=$yourBet - $lot['step_bet']; ?></span>
+          <span class="lot-item__amount"><?=price_format($lot['price_start']); ?></span>
+          <span class="lot-item__cost"><?=price_format($yourBet - $lot['step_bet']); ?></span>
         </div>
         <div class="lot-item__min-cost">
-          Мин. ставка <span><?=$lot['step_bet']; ?>р</span>
+          Мин. ставка <span><?=price_format($lot['step_bet']); ?></span>
         </div>
       </div>
-      <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
+      <?php if (isset($_SESSION['user'])): ?>
+      <form class="lot-item__form" action="lot.php" method="post">
         <p class="lot-item__form-item">
           <label for="cost">Ваша ставка</label>
-          <input id="cost" type="number" name="cost" placeholder="<?=$yourBet; ?>">
+          <input <?=isset($error_bet) ? "style='border: 1px solid red;'" : '';?> id="cost" type="number" name="cost" placeholder="<?=price_format($yourBet); ?>">
         </p>
         <button type="submit" class="button">Сделать ставку</button>
       </form>
+        <span style="font-size: 15px; color: red;"><?=isset($error_bet) ? $error_bet : ''; ?></span>
+      <?php endif; ?>
     </div>
     <div class="history">
     <h3>История ставок (<span><?=count($bets);?></span>)</h3>
@@ -45,7 +48,7 @@
             <?php foreach($bets as $bet): ?>
             <tr class="history__item">
               <td class="history__name"><?=$bet['user_name']; ?></td>
-              <td class="history__price"><?=$bet['price']; ?></td>
+              <td class="history__price"><?=price_format($bet['price']); ?></td>
               <td class="history__time"><?=$bet['date_start']; ?></td>
             </tr>
             <?php endforeach; ?>
