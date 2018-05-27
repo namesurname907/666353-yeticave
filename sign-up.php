@@ -8,7 +8,11 @@ if (!$link) {
 else {
 
     /*Получаем список категорий*/
-    $categories = getCategoryList($link);
+
+    try{ $categories = getCategoryList($link);
+    } catch (Exception $e) {
+        http_response_code(503); exit();
+    }
 
     /*Присваиваем пустоту, чтобы в случае отсутствия запроса не возникало ошибки*/
     $errors = NULL;

@@ -19,11 +19,18 @@ else {
         exit();
     }
     else {
-       $user = getUserInfo($link, $_SESSION['user']);
+        try{ $user = getUserInfo($link, $_SESSION['user']);
+        } catch (Exception $e) {
+            http_response_code(500); exit();
+        }
+
     };
 
     /*Получаем список категорий и проверяем не произошла ли ошибка при запросе*/
-    $categories = getCategoryList($link);
+    try{ $categories = getCategoryList($link);
+    } catch (Exception $e) {
+        http_response_code(500); exit();
+    }
 
     /*Проверяем отправлена ли форма*/
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -53,18 +60,20 @@ else {
             $errors['file'] = 'Вы не загрузили файл';
         }
 
-        /*Проверяем собрали ли мы какие-нибудь ошибки*/
+        /*Проверяем собрали ли мы какие-нибудь ошибки, если нет, то загружаем файл*/
         if (empty($errors)) {
             $path = uniqid().'.jpg';
             $place = "img/";
             $file_path = $place . $path;
             move_uploaded_file($_FILES['lot-img']['tmp_name'], $file_path);
 
-            $answer = insertLot($link, ['name' => $lot['name'], 'category' => $lot['category'], 'file_path' => $file_path, 'rate' => $lot['rate'], 'id' => $user['id'], 'step' => $lot['step'], 'date' => $lot['date'], 'message' => $lot['message']]);
-            if (empty($answer['error'])) {
-                $lot_id = $answer['lot-id'];
-                header("Location: lot.php?id=" . $lot_id);
-            };
+            try { $lot_id = insertLot($link, ['name' => $lot['name'], 'category' => $lot['category'], 'file_path' => $file_path, 'rate' => $lot['rate'], 'id' => $user['id'], 'step' => $lot['step'], 'date' => $lot['date'], 'message' => $lot['message']]);
+            } catch (Exception $e) {
+              http_response_code(500); exit();
+            }
+
+            header("Location: lot.php?id=" . $lot_id);
+            };            ;
         };
     };
 
