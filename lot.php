@@ -1,14 +1,11 @@
 <?php
 require('init.php');
+require('mysql_helper.php');
 
-
-    try { connect($con);
-    } catch (Exception $e) {
-        http_response_code(503); exit();
-    }
-
-    mysqli_set_charset($link, "utf8");
-
+if (!$link) {
+    print('Ошибка подключения: '.mysqli_connect_error());
+}
+else {
     /*Поисовим переменным пустоту*/
     $user = [];
     $lot = [];
@@ -71,4 +68,5 @@ require('init.php');
      $content = render_template('templates/lot.php', ['categories' => $categories, 'lot' => $lot, 'bets' => $bets, 'yourBet' => $yourBet, 'error_bet' => $error_bet, 'error_class' => 'form__item--invalid']);
      $all_content = render_template('templates/layout.php', ['categories' => $categories, 'content' => $content, 'title' => $lot['name'], 'user_name' => $user['name'], 'user_avatar' => $user['avatar']]);
      print($all_content);
+};
 ?>
