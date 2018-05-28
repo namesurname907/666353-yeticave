@@ -73,7 +73,7 @@ else {
             }
 
             header("Location: lot.php?id=" . $lot_id);
-            };            ;
+            
         };
     };
 
