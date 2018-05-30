@@ -8,7 +8,7 @@
 function price_format($price) {
     $price = ceil($price);
 
-    if ($price > 1000) {
+    if ($price >= 1000) {
         $price = number_format($price, 0, '', ' ');
     }
     return $price." ₽";
@@ -22,6 +22,7 @@ function price_format($price) {
  * @return string Html-код с переменными PHP
  */
 function render_template($path, $data = []) {
+    $content = null;
     extract($data);
     if (file_exists($path)){
         ob_start();
@@ -110,7 +111,7 @@ function validateFile($required, $format, $errors) {
         $file_type = mime_content_type($required);
         $errors['file'] = 'Загрузите файл в нужном формате';
         foreach ($format as $form) {
-            if ($file_type == $form) {
+            if ($file_type === $form) {
                 unset($errors['file']);
             };
         };

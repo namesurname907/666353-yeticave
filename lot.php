@@ -75,7 +75,7 @@ else {
             };
         }
     }
-     //Было бы удобнее испльзовать прямой слэш, так как он должен работать и на Mac, и на Windows. Но по факту у меня на Windows10 прямой слэш не работает
+
      $content = render_template('templates/lot.php', ['categories' => $categories, 'lot' => $lot, 'user_id' => $lot['user_id'], 'user' => $user, 'bets' => $bets, 'yourBet' => $yourBet, 'error_bet' => $error_bet, 'error_class' => 'form__item--invalid', 'log_user_id' => $user['id'], 'lot_user_id' => $lot['user_id'], 'max_bet_user_id' => $max_bet_user_id]);
      $all_content = render_template('templates/layout.php', ['categories' => $categories, 'content' => $content, 'title' => $lot['name'], 'user_name' => $user['name'], 'user_avatar' => $user['avatar']]);
      print($all_content);

@@ -72,18 +72,16 @@ function getBetsById($link, $id) {
  * @throws Exception
  */
 function getLotById($link, $id) {
-    $array = NULL;
     $sql = "SELECT name, image, description, price_start, step_bet, category_id, date_end, user_id FROM lots WHERE id=?";
     $stmt = db_get_prepare_stmt($link, $sql, ['id' => $id]);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     if ($result) {
-        $array = mysqli_fetch_assoc($result);
+        return mysqli_fetch_assoc($result);
     }
     else {
         throw new Exception('DATABASE ERROR');
     }
-    return $array;
 };
 /**
  * Расчет плэйсхолдера для поля "Ваша ставка" на основе идентификатора лота и его описания
@@ -113,7 +111,7 @@ function yourBet($link, $id, $lot) {
        else {
             $yourBet = $array['cur_max_price'] + $array['step_bet'];
        }
-       }
+    }
     else {
         throw new Exception('DATABASE ERROR');
     }
@@ -207,7 +205,7 @@ function insertLot($link, $data = []) {
  * @throws Exception
  */
 function validateEmail($link, $email, $errors, $up = 1) {
-    $user = NULL;
+    $user = [];
     if (!empty($email)) {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
              $errors['email'] = 'Неверный формат email';
@@ -250,18 +248,16 @@ function validateEmail($link, $email, $errors, $up = 1) {
  * @throws Exception
  */
 function getUserInfo($link, $email) {
-    $user = NULL;
     $sql = "SELECT id, name, avatar, contact FROM users WHERE email=?";
     $stmt = db_get_prepare_stmt($link, $sql, ['email' => $email]);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     if ($result) {
-        $user = mysqli_fetch_assoc($result);
+        return mysqli_fetch_assoc($result);
     }
     else {
         throw new Exception('DATABASE ERROR');
     }
-    return $user;
 };
 /**
  * Добавление ставки в БД

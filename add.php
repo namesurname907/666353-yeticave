@@ -17,6 +17,8 @@ else {
     $lot['rate'] = NULL;
     $lot['step'] = NULL;
     $lot['date'] = NULL;
+    $user['name'] = NULL;
+    $user['avatar'] = NULL;
 
     //Закрываем доступ к странице, если пользователь неавторизован, а если авторизован получаем его данные
     session_start();
@@ -42,8 +44,6 @@ else {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         //Переменные для сохранения значений полей
-        $user['name'] = NULL;
-        $user['avatar'] = NULL;
         $lot['name'] = $_POST['lot-name'];
         $lot['category'] = $_POST['category'];
         $lot['message'] = $_POST['message'];
