@@ -20,7 +20,7 @@
   <div class="lot-item__right">
     <div class="lot-item__state">
       <div class="lot-item__timer timer">
-        <?=date('G:i:s', dateBeforeEnd($lot['date_end']));?>
+        <?=timeToEnd($lot['date_end']);?>
       </div>
       <div class="lot-item__cost-state">
         <div class="lot-item__rate">
@@ -31,7 +31,7 @@
           Мин. ставка <span><?=price_format($lot['step_bet']); ?></span>
         </div>
       </div>
-      <?php if (isset($_SESSION['user'])): ?>
+      <?php if ((isset($_SESSION['user'])) && ($log_user_id !== $lot_user_id) && ($max_bet_user_id !== $log_user_id)): ?>
       <form class="lot-item__form" action="lot.php" method="post">
         <p class="lot-item__form-item">
           <label for="cost">Ваша ставка</label>

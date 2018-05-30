@@ -41,11 +41,11 @@
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost">
                                 <!--Цена-->
-                                <?= price_format($lot['price_start']); ?>
+                                <?=price_format($lot['price_start']); ?>
                                 <!--Цена--></span>
                         </div>
                         <div class="lot__timer timer">
-                            <?=date('G:i:s', dateBeforeEnd($lot['date_end']));?>
+                            <?=timeToEnd($lot['date_end']);?>
                         </div>
                     </div>
                 </div>

@@ -6,18 +6,20 @@ if (!$link) {
     print('Ошибка подключения: '.mysqli_connect_error());
 }
 else {
+    //Объявляем переменные
+    $lots = [];
+    $user = [];
+    $user['name'] = NULL;
+    $user['avatar'] = NULL;
 
-
+    //Получаем список категорий и лотов
     try{ $categories = getCategoryList($link);
          $lots = getLotsSortedByNew($link);
     } catch (Exception $e) {
         http_response_code(500); exit();
     }
 
-    $lots = getLotsSortedByNew($link);
-
-    $user = [];
-
+    //Если пользователь залогинен, получаем информацию о нем для отображения на странице
     session_start();
     if (isset($_SESSION['user'])) {
         try{ $user = getUserInfo($link, $_SESSION['user']);

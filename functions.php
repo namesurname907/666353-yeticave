@@ -1,5 +1,10 @@
 <?php
-/*Форматирование цены*/
+/**
+ * Создает строку с отформатированной ценой на основе целого числа
+ *
+ * @param int $price Цена
+ * @return string Отформатированная цена
+ */
 function price_format($price) {
     $price = ceil($price);
 
@@ -8,9 +13,16 @@ function price_format($price) {
     }
     return $price." ₽";
 };
-/*Вставка шаблона*/
-function render_template($path, $array) {
-    extract($array);
+/**
+ * Подключение шаблона на основе пути к этому шаблону и данных для него
+ *
+ * @param string $path Путь к шаблону
+ * @param array $data Массив с данными
+ *
+ * @return string Html-код с переменными PHP
+ */
+function render_template($path, $data = []) {
+    extract($data);
     if (file_exists($path)){
         ob_start();
         include($path);
@@ -21,23 +33,24 @@ function render_template($path, $array) {
 
     return $content;
 };
-/*Защита от XSS*/
+/**
+ * Защита от XSS
+ *
+ * @param string $str Строка, которая нуждается в преобразовании
+ * @return string Преобразованная строка
+ */
 function esc($str) {
     return htmlspecialchars($str);
 };
-/*Таймер расчета остатка времени до полуночи*/
-function timeToMidnight(){
-    $dif_ts = strtotime('00:00:00') - time();
-    $dif_all_min = floor($dif_ts / 60) + 24 * 60;
-    $dif = floor($dif_all_min / 60). ':' .floor($dif_all_min % 60);
-
-    return $dif;
-};
-/*Время до окончания аукциона*/
-function dateBeforeEnd($date) {
-        return (strtotime($date) - time());
-};
-/*Валидация полей на пустоту*/
+/**
+ * Валидация полей на пустоту
+ * ключ переменной из массива, который необходимо провалидировать, будет ключем в массиве ошибок
+ *
+ * @param array $required Массив с переменными, которые необходимо проверить
+ * @param array $errors Массив, куда запишем ошибку, в случае ее возникновения
+ *
+ * @return array $errors Массив, со всеми накопленными ошибками
+ */
 function validateEmpty($required, $errors) {
     foreach ($required as $key => $value) {
         if (empty($value)) {
@@ -46,7 +59,14 @@ function validateEmpty($required, $errors) {
     }
     return $errors;
 };
-/*Валидация полей на целое положительное число*/
+/**
+ * Валидация полей на целое положительное число
+ *
+ * @param array $required Поля, которое необходимо проверить
+ * @param array $errors Массив, куда запишем ошибку, в случае ее возникновения
+ *
+ * @return array $errors Массив, со всеми накопленными ошибками
+ */
 function validateInt($required, $errors) {
     foreach ($required as $key => $value) {
         if (!empty($value)) {
@@ -57,7 +77,14 @@ function validateInt($required, $errors) {
     }
     return $errors;
 };
-/*Валидация даты*/
+/**
+ * Валидация даты
+ *
+ * @param array $required Поля, которое необходимо проверить
+ * @param array $errors Массив, куда запишем ошибку, в случае ее возникновения
+ *
+ * @return array $errors Массив, со всеми накопленными ошибками
+ */
 function validateDate($required, $errors) {
     foreach ($required as $key => $value) {
         if (!empty($value)) {
@@ -69,7 +96,15 @@ function validateDate($required, $errors) {
     };
     return $errors;
 };
-/*Проверяет формат файла*/
+/**
+ * Проверка формата файла
+ *
+ * @param string $required Путь к файлу, который необходимо проверить
+ * @param array $format Массив, с допустимыми форматами
+ * @param array $errors Массив, куда запишем ошибку, в случае ее возникновения
+ *
+ * @return array $errors Массив, со всеми накопленными ошибками
+ */
 function validateFile($required, $format, $errors) {
     if (!empty($required)) {
         $file_type = mime_content_type($required);
@@ -82,3 +117,24 @@ function validateFile($required, $format, $errors) {
     }
     return $errors;
 };
+/**
+ * Создает строку с оставшимся временем до заданной даты
+ * если количеством часов или минут являются числа с одной цифрой, то вереди к ним приписывается ноль
+ *
+ * @param string $date Дата окончания
+ * @return string Строка с количеством оставшихся дней, часов и минут
+ */
+function timeToEnd($date){
+    $dif = strtotime($date) - time();
+    $days_to_end = floor($dif/86400);
+    $hours_to_end = floor(($dif%86400)/3600);
+        if ($hours_to_end<10) {
+            $hours_to_end = '0'.$hours_to_end ;
+        }
+    $mins_to_end = floor((($dif%86400)%3600)/60);
+        if ($mins_to_end<10) {
+            $mins_to_end = '0'.$mins_to_end ;
+        }
+    return $days_to_end.':'.$hours_to_end.':'.$mins_to_end;
+};
+

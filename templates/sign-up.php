@@ -26,7 +26,7 @@
     </div>
    <div class="form__item <?=isset($errors['message']) ? $error_class : '';?>">
       <label for="message">Контактные данные*</label>
-      <textarea id="message" name="message" placeholder="Напишите как с вами связаться" ><?=esc($lot['message']); ?></textarea>
+      <textarea id="message" name="message" placeholder="Напишите как с вами связаться" ><?=esc($message); ?></textarea>
       <span class="form__error"><span class="form__error"><?=isset($errors['message']) ? $errors['message'] : '';?></span></span>
     </div>
     <div class="form__item form__item--file form__item--last">

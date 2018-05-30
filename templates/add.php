@@ -31,7 +31,7 @@
     </div>
     <div class="form__item form__item--wide <?=isset($errors['message']) ? $error_class : '';?>">
       <label for="message">Описание</label>
-      <textarea id="message" name="message" placeholder="Напишите описание лота" ><?=esc($lot['message']); ?></textarea>
+      <textarea id="message" name="message" placeholder="Напишите описание лота" ><?=esc($message); ?></textarea>
       <span class="form__error"><span class="form__error"><?=isset($errors['message']) ? $errors['message'] : '';?></span></span>
     </div>
     <div class="form__item form__item--file"> <!-- form__item--uploaded -->
